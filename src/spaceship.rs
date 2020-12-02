@@ -18,7 +18,7 @@ impl Spaceship {
             position: Vec2::new(x, y),
             speed: Vec2::new(0.0,0.0),
             theta: 0.0,
-            scale: 2.0,
+            scale: 1.0,
             engine: false,
             color: Color::RED,
         })
@@ -33,10 +33,10 @@ impl Spaceship {
     }
 
     pub fn update(&mut self) {
-        if self.engine == true {
+        if self.engine == true && self.speed.magnitude_squared() < 100.0 {
             self.speed.x += 0.5 * self.theta.cos();
             self.speed.y += 0.5 * self.theta.sin();
-        } else {
+        } else if !self.engine {
             self.speed.x *= 0.98;
             self.speed.y *= 0.98;
         }

@@ -16,7 +16,7 @@ impl Bullet {
             position: init_pos,
             speed: 10.0,
             theta: init_dir,
-            scale: 2.0,
+            scale: 1.0,
             color: Color::RED,
 
         })
