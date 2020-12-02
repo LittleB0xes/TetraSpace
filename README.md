@@ -1,2 +1,4 @@
 # TetraSpace
-A spaceshooter test with tetra meshes
+A spaceshooter test with tetra meshes.
+
+The start of a great adventure...
