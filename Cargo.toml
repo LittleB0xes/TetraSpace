@@ -1,5 +1,5 @@
 [package]
-name = "throw_it"
+name = "TetraSpace"
 version = "0.1.0"
 authors = ["LittleB0xes <nihenriot@gmail.com>"]
 edition = "2018"

@@ -1,5 +1,5 @@
-use tetra::Context;
 use tetra::math::Vec2;
+use tetra::graphics::Color;
 
 
 pub struct Bullet {
@@ -7,15 +7,17 @@ pub struct Bullet {
         speed: f32,
     pub theta: f32,
     pub scale: f32,
+    pub color: Color,
 }
 
 impl Bullet {
-    pub fn new(ctx: &mut Context, init_pos: Vec2<f32>, init_dir: f32) -> tetra::Result<Bullet> {
+    pub fn new(init_pos: Vec2<f32>, init_dir: f32) -> tetra::Result<Bullet> {
         Ok(Bullet {
             position: init_pos,
-            speed: 5.0,
+            speed: 10.0,
             theta: init_dir,
             scale: 2.0,
+            color: Color::RED,
 
         })
     }

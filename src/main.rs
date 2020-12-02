@@ -1,7 +1,6 @@
-use tetra::graphics::{self, BufferUsage, Mesh, Vertex, VertexBuffer, Color, Texture, Rectangle, DrawParams};
+use tetra::graphics::{self, BufferUsage, Mesh, Vertex, VertexBuffer, Color, DrawParams};
 use tetra::{Context, ContextBuilder, State};
 use tetra::input::{self, Key};
-use tetra::window;
 use tetra::math::Vec2;
 
 mod spaceship;
@@ -31,12 +30,12 @@ impl GameState {
         let (pos_b, uv_b) = (Vec2::new(2.5, 2.5), Vec2::new(0.5, 0.5));
         let (pos_c, uv_c) = (Vec2::new(0.0, 5.0), Vec2::new(0.0, 1.0));
         let bullet_vertices = &[
-            Vertex::new(pos_a, uv_a, Color::RED),
-            Vertex::new(pos_b, uv_b, Color::RED),
-            Vertex::new(pos_c, uv_c, Color::RED),
+            Vertex::new(pos_a, uv_a, Color::WHITE),
+            Vertex::new(pos_b, uv_b, Color::WHITE),
+            Vertex::new(pos_c, uv_c, Color::WHITE),
         ];
 
-        let mut bullet_mesh = VertexBuffer::with_usage(ctx, bullet_vertices, BufferUsage::Static)?.into_mesh();
+        let bullet_mesh = VertexBuffer::with_usage(ctx, bullet_vertices, BufferUsage::Static)?.into_mesh();
 
         // Spaceship Mesh
         let (pos_e, uv_e) = (Vec2::new(0.0, 0.0), Vec2::new(0.0, 0.0));
@@ -46,22 +45,21 @@ impl GameState {
 
         let spaceship_vertices = &[
             //triangle 1
-            Vertex::new(pos_e, uv_e, Color::RED),
-            Vertex::new(pos_f, uv_f, Color::RED),
-            Vertex::new(pos_h, uv_h, Color::RED),
+            Vertex::new(pos_e, uv_e, Color::WHITE),
+            Vertex::new(pos_f, uv_f, Color::WHITE),
+            Vertex::new(pos_h, uv_h, Color::WHITE),
             //trinagle 2
-            Vertex::new(pos_f, uv_f, Color::BLUE),
-            Vertex::new(pos_g, uv_g, Color::BLUE),
-            Vertex::new(pos_h, uv_h, Color::BLUE),
+            Vertex::new(pos_f, uv_f, Color::WHITE),
+            Vertex::new(pos_g, uv_g, Color::WHITE),
+            Vertex::new(pos_h, uv_h, Color::WHITE),
         ];
-        let mut spaceship_mesh = VertexBuffer::with_usage(ctx, spaceship_vertices, BufferUsage::Static)?.into_mesh();
+        let spaceship_mesh = VertexBuffer::with_usage(ctx, spaceship_vertices, BufferUsage::Static)?.into_mesh();
 
-        //mesh.set_texture(Texture::new(ctx, "./resources/block.png")?);
 
         Ok(GameState { 
             bullet_list: Vec::new(),
             bullet_mesh: bullet_mesh,
-            spaceship: Spaceship::new(ctx, WIDTH, HEIGHT)?,
+            spaceship: Spaceship::new(WIDTH * 0.5, HEIGHT * 0.5)?,
             spaceship_mesh: spaceship_mesh
         })
     }
@@ -80,6 +78,7 @@ impl State for GameState {
                     .position(bullet.position)
                     .origin(Vec2::new(0.0, 2.5))
                     .scale(Vec2::new(bullet.scale, bullet.scale))
+                    .color(bullet.color)
                     .rotation(bullet.theta),
             );
             
@@ -92,7 +91,8 @@ impl State for GameState {
                 .position(self.spaceship.position)
                 .origin(Vec2::new(12.5, 10.0))
                 .scale(Vec2::new(self.spaceship.scale, self.spaceship.scale))
-                .rotation(self.spaceship.theta),
+                .rotation(self.spaceship.theta)
+                .color(self.spaceship.color),
         );
         Ok(())
     }
@@ -112,7 +112,7 @@ impl State for GameState {
         }
 
         if input::is_key_pressed(ctx, Key::Space) {
-            self.bullet_list.push(Bullet::new(ctx, self.spaceship.position, self.spaceship.theta)?);
+            self.bullet_list.push(Bullet::new(self.spaceship.position, self.spaceship.theta)?);
             
         }
 

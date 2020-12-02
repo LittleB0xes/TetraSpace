@@ -1,5 +1,5 @@
 use tetra::math::Vec2;
-use tetra::Context;
+use tetra::graphics::Color;
 
 
 pub struct Spaceship {
@@ -8,17 +8,19 @@ pub struct Spaceship {
     pub theta: f32,
     pub scale: f32,
         engine: bool,
+    pub color: Color,
 }
 
 impl Spaceship {
-    pub fn new(ctx: &mut Context, view_width: f32, view_height: f32) -> tetra::Result<Spaceship> {
+    pub fn new(x: f32, y: f32) -> tetra::Result<Spaceship> {
 
         Ok(Spaceship {
-            position: Vec2::new(view_width / 2.0, view_height / 2.0),
+            position: Vec2::new(x, y),
             speed: Vec2::new(0.0,0.0),
             theta: 0.0,
             scale: 2.0,
             engine: false,
+            color: Color::RED,
         })
     }
 
@@ -32,7 +34,6 @@ impl Spaceship {
 
     pub fn update(&mut self) {
         if self.engine == true {
-            let acc = 0.5;
             self.speed.x += 0.5 * self.theta.cos();
             self.speed.y += 0.5 * self.theta.sin();
         } else {
