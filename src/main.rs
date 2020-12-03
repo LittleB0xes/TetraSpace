@@ -1,7 +1,8 @@
-use tetra::graphics::{self, BufferUsage, Mesh, Vertex, VertexBuffer, Color, DrawParams};
+use tetra::graphics::{self, BufferUsage, Mesh, Vertex, VertexBuffer, Color, DrawParams, Shader, Texture};
 use tetra::{Context, ContextBuilder, State};
 use tetra::input::{self, Key};
 use tetra::math::Vec2;
+use rand::Rng;
 
 mod spaceship;
 use spaceship::*;
@@ -24,6 +25,7 @@ struct GameState {
     bullet_mesh: Mesh,
     spaceship_mesh: Mesh,
     particle_mesh: Mesh,
+    shader: Shader,
         
 }
 
@@ -72,6 +74,13 @@ impl GameState {
 
         let particle_mesh = VertexBuffer::with_usage(ctx, particle_vertices, BufferUsage::Static)?.into_mesh();
 
+       // shader 
+        let overlay = Texture::new(ctx, "./resources/pixel.png")?;
+
+        let shader = Shader::from_fragment_file(ctx, "./resources/default.frag")?;
+        shader.set_uniform(ctx, "u_overlay", overlay);
+
+
 
         Ok(GameState { 
             bullet_list: Vec::new(),
@@ -80,6 +89,7 @@ impl GameState {
             spaceship_mesh: spaceship_mesh,
             particle_list: Vec::new(),
             particle_mesh: particle_mesh,
+            shader: shader,
         })
     }
 }
@@ -104,6 +114,16 @@ impl State for GameState {
         }
 
         for p in self.particle_list.iter() {
+
+            graphics::set_shader(ctx, &self.shader);
+            let mut rng = rand::thread_rng();
+            let red = rng.gen_range(0.0, 1.0);
+            let green = rng.gen_range(0.0, 1.0);
+            let blue = rng.gen_range(0.0, 1.2);
+
+            self.shader.set_uniform(ctx, "u_red", red);
+            self.shader.set_uniform(ctx, "u_green", green);
+            self.shader.set_uniform(ctx, "u_blue", blue);
             graphics::draw(
                 ctx,
                 &self.particle_mesh,
@@ -111,9 +131,11 @@ impl State for GameState {
                     .position(p.position)
                     .origin(Vec2::new(0.0, 2.5))
                     .scale(Vec2::new(p.scale, p.scale))
-                    .color(p.color)
+                    .color(Color::RED)
                     .rotation(p.theta),
             );
+
+            graphics::reset_shader(ctx);
             
         }
 
