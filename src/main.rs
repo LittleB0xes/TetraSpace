@@ -9,6 +9,9 @@ use spaceship::*;
 mod bullet;
 use bullet::*;
 
+mod particle;
+use particle::*;
+
 const WIDTH: f32 = 1280.0;
 const HEIGHT: f32 = 720.0;
 
@@ -17,8 +20,10 @@ const HEIGHT: f32 = 720.0;
 struct GameState {
     spaceship: Spaceship,
     bullet_list: Vec<Bullet>,
+    particle_list: Vec<Particle>,
     bullet_mesh: Mesh,
     spaceship_mesh: Mesh,
+    particle_mesh: Mesh,
         
 }
 
@@ -55,12 +60,26 @@ impl GameState {
         ];
         let spaceship_mesh = VertexBuffer::with_usage(ctx, spaceship_vertices, BufferUsage::Static)?.into_mesh();
 
+        // Particle Mesh
+        let (pos_i, uv_i) = (Vec2::new(0.0, 0.0), Vec2::new(0.0, 0.0));
+        let (pos_j, uv_j) = (Vec2::new(1.25, 1.25), Vec2::new(0.5, 0.5));
+        let (pos_k, uv_k) = (Vec2::new(0.0, 2.5), Vec2::new(0.0, 1.0));
+        let particle_vertices = &[
+            Vertex::new(pos_i, uv_i, Color::WHITE),
+            Vertex::new(pos_j, uv_j, Color::WHITE),
+            Vertex::new(pos_k, uv_k, Color::WHITE),
+        ];
+
+        let particle_mesh = VertexBuffer::with_usage(ctx, particle_vertices, BufferUsage::Static)?.into_mesh();
+
 
         Ok(GameState { 
             bullet_list: Vec::new(),
             bullet_mesh: bullet_mesh,
             spaceship: Spaceship::new(WIDTH * 0.5, HEIGHT * 0.5)?,
-            spaceship_mesh: spaceship_mesh
+            spaceship_mesh: spaceship_mesh,
+            particle_list: Vec::new(),
+            particle_mesh: particle_mesh,
         })
     }
 }
@@ -84,6 +103,20 @@ impl State for GameState {
             
         }
 
+        for p in self.particle_list.iter() {
+            graphics::draw(
+                ctx,
+                &self.particle_mesh,
+                DrawParams::new()
+                    .position(p.position)
+                    .origin(Vec2::new(0.0, 2.5))
+                    .scale(Vec2::new(p.scale, p.scale))
+                    .color(p.color)
+                    .rotation(p.theta),
+            );
+            
+        }
+
         graphics::draw(
             ctx,
             &self.spaceship_mesh,
@@ -98,12 +131,31 @@ impl State for GameState {
     }
 
     fn update(&mut self, ctx: &mut Context) -> tetra::Result {
-
+        
+        // Objects update
         self.spaceship.update();
         for b in self.bullet_list.iter_mut() {
             b.update();
         }
+        for p in self.particle_list.iter_mut() {
+            p.update(ctx);
+        }
 
+        // Cleaning dead particle
+        
+        // Alors ça c'est vraiment pas beau comme code... 
+        // Faudrait trouver mieux, plus rusty
+        let mut i = 0;
+        while i < self.particle_list.len() {
+            if !self.particle_list[i].active {
+                self.particle_list.remove(i);
+            } else {
+                i +=1;
+            }
+        }
+
+        // Inputs
+        //
         if input::is_key_down(ctx, Key::Left) {
             self.spaceship.rotation_left();
         }
@@ -112,12 +164,17 @@ impl State for GameState {
         }
 
         if input::is_key_pressed(ctx, Key::Space) {
+
             self.bullet_list.push(Bullet::new(self.spaceship.position, self.spaceship.theta)?);
             
         }
 
         if input::is_key_down(ctx, Key::Up) {
             self.spaceship.engine_on();
+            for _i in 0..5 {
+                self.particle_list.push(Particle::new(self.spaceship.position, self.spaceship.theta)?);
+            }
+
         } else {
             self.spaceship.engine_off();
         }

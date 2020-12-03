@@ -9,6 +9,7 @@ pub struct Spaceship {
     pub scale: f32,
         engine: bool,
     pub color: Color,
+        acc: f32,
 }
 
 impl Spaceship {
@@ -21,6 +22,7 @@ impl Spaceship {
             scale: 1.0,
             engine: false,
             color: Color::RED,
+            acc: 0.2,
         })
     }
 
@@ -34,8 +36,8 @@ impl Spaceship {
 
     pub fn update(&mut self) {
         if self.engine == true && self.speed.magnitude_squared() < 100.0 {
-            self.speed.x += 0.5 * self.theta.cos();
-            self.speed.y += 0.5 * self.theta.sin();
+            self.speed.x += self.acc * self.theta.cos();
+            self.speed.y += self.acc * self.theta.sin();
         } else if !self.engine {
             self.speed.x *= 0.98;
             self.speed.y *= 0.98;
