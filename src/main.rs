@@ -116,14 +116,10 @@ impl State for GameState {
         for p in self.particle_list.iter() {
 
             graphics::set_shader(ctx, &self.shader);
-            let mut rng = rand::thread_rng();
-            let red = rng.gen_range(0.0, 1.0);
-            let green = rng.gen_range(0.0, 1.0);
-            let blue = rng.gen_range(0.0, 1.2);
-
-            self.shader.set_uniform(ctx, "u_red", red);
-            self.shader.set_uniform(ctx, "u_green", green);
-            self.shader.set_uniform(ctx, "u_blue", blue);
+            self.shader.set_uniform(ctx, "u_alpha", p.color.a);
+            self.shader.set_uniform(ctx, "u_red", p.color.r);
+            self.shader.set_uniform(ctx, "u_green", p.color.g);
+            self.shader.set_uniform(ctx, "u_blue", p.color.b);
             graphics::draw(
                 ctx,
                 &self.particle_mesh,

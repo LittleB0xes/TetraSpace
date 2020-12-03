@@ -26,7 +26,7 @@ impl Particle {
             direction: PI + init_dir + delta_dir,
             theta: 0.0,
             speed: speed,
-            scale: 3.0,
+            scale: 4.0,
             color: Color::rgba(1.0, 0.0, 0.0, 1.0),
             active: true,
         })
@@ -38,7 +38,8 @@ impl Particle {
         let w = window::get_width(ctx) as f32;
         let h = window::get_height(ctx) as f32;
 
-        self.color.a -= 0.1;
+        self.color.a -= 0.01;
+        self.theta += 0.05;
         if self.position.x < 0.0 || self.position.x > w || self.position.y < 0.0 ||self.position.y > h {
             self.active = false;
         }
