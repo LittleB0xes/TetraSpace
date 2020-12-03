@@ -189,7 +189,7 @@ impl State for GameState {
 
         if input::is_key_down(ctx, Key::Up) {
             self.spaceship.engine_on();
-            for _i in 0..5 {
+            for _i in 0..20 {
                 self.particle_list.push(Particle::new(self.spaceship.position, self.spaceship.theta)?);
             }
 

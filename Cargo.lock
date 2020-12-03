@@ -801,9 +801,9 @@ dependencies = [
 
 [[package]]
 name = "tetra"
-version = "0.5.4"
+version = "0.5.5"
 source = "registry+https://github.com/rust-lang/crates.io-index"
-checksum = "d6f7f1ab8e47131af4a931e7f3364e8c8f5771ab5b7c882bdeffbef7f9654d70"
+checksum = "d7ea5f47b00803a218a10ffeeb2dc4a239e73b416a41bcc02f31ad1c8766af01"
 dependencies = [
  "ab_glyph",
  "bytemuck",
