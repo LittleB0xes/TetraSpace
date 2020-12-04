@@ -26,6 +26,7 @@ struct GameState {
     spaceship_mesh: Mesh,
     particle_mesh: Mesh,
     shader: Shader,
+    space_shader: Shader,
         
 }
 
@@ -74,12 +75,14 @@ impl GameState {
 
         let particle_mesh = VertexBuffer::with_usage(ctx, particle_vertices, BufferUsage::Static)?.into_mesh();
 
-       // shader 
-        let overlay = Texture::new(ctx, "./resources/pixel.png")?;
+       // default shader 
+        //let overlay = Texture::new(ctx, "./resources/pixel.png")?;
 
         let shader = Shader::from_fragment_file(ctx, "./resources/default.frag")?;
-        shader.set_uniform(ctx, "u_overlay", overlay);
-
+        //shader.set_uniform(ctx, "u_overlay", overlay);
+        
+        // Spaceship shader
+        let space_shader = Shader::from_fragment_file(ctx, "./resources/space.frag")?;
 
 
         Ok(GameState { 
@@ -90,6 +93,7 @@ impl GameState {
             particle_list: Vec::new(),
             particle_mesh: particle_mesh,
             shader: shader,
+            space_shader: space_shader,
         })
     }
 }
@@ -115,11 +119,11 @@ impl State for GameState {
 
         for p in self.particle_list.iter() {
 
-            graphics::set_shader(ctx, &self.shader);
-            self.shader.set_uniform(ctx, "u_alpha", p.color.a);
-            self.shader.set_uniform(ctx, "u_red", p.color.r);
-            self.shader.set_uniform(ctx, "u_green", p.color.g);
-            self.shader.set_uniform(ctx, "u_blue", p.color.b);
+            //graphics::set_shader(ctx, &self.shader);
+            //self.shader.set_uniform(ctx, "u_alpha", p.color.a);
+            //self.shader.set_uniform(ctx, "u_red", p.color.r);
+            //self.shader.set_uniform(ctx, "u_green", p.color.g);
+            //self.shader.set_uniform(ctx, "u_blue", p.color.b);
             graphics::draw(
                 ctx,
                 &self.particle_mesh,
@@ -127,14 +131,16 @@ impl State for GameState {
                     .position(p.position)
                     .origin(Vec2::new(0.0, 2.5))
                     .scale(Vec2::new(p.scale, p.scale))
-                    .color(Color::RED)
+                    .color(p.color)
                     .rotation(p.theta),
             );
 
-            graphics::reset_shader(ctx);
+            //graphics::reset_shader(ctx);
             
         }
-
+        
+        graphics::set_shader(ctx, &self.space_shader);
+        self.space_shader.set_uniform(ctx, "u_resolution", Vec2::new(30.0, 20.0));
         graphics::draw(
             ctx,
             &self.spaceship_mesh,
@@ -142,9 +148,10 @@ impl State for GameState {
                 .position(self.spaceship.position)
                 .origin(Vec2::new(12.5, 10.0))
                 .scale(Vec2::new(self.spaceship.scale, self.spaceship.scale))
-                .rotation(self.spaceship.theta)
-                .color(self.spaceship.color),
+                .rotation(self.spaceship.theta),
+                //.color(self.spaceship.color),
         );
+        graphics::reset_shader(ctx);
         Ok(())
     }
 
